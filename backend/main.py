@@ -120,7 +120,7 @@ def process_image_for_masking(img: np.ndarray, mask_mode: str):
 
     detected_count = len(valid_jumins)
     if detected_count == 0:
-        return flattened_img, 0
+        return flattened_img, 0, entire_ocr_text
 
     n_boxes = len(data['text'])
     for i in range(n_boxes):
@@ -152,7 +152,7 @@ def process_image_for_masking(img: np.ndarray, mask_mode: str):
             else:
                 cv2.rectangle(flattened_img, (x - 4, y - 4), (x + w + 4, y + h + 4), (0, 0, 0), -1)
 
-    return flattened_img, detected_count
+    return flattened_img, detected_count, entire_ocr_text
 
 @app.post("/api/mask")
 async def mask_privacy_document(
@@ -182,7 +182,7 @@ async def mask_privacy_document(
             scale = max_dim / max(height, width)
             img = cv2.resize(img, (int(width * scale), int(height * scale)), interpolation=cv2.INTER_AREA)
 
-        processed_img, total_detected = process_image_for_masking(img, mask_mode)
+        processed_img, total_detected, ocr_debug_text = process_image_for_masking(img, mask_mode)
 
         _, encoded_img = cv2.imencode('.png', processed_img)
         base64_image = "data:image/png;base64," + base64.b64encode(encoded_img).decode('utf-8')
@@ -191,6 +191,7 @@ async def mask_privacy_document(
             "status": "success",
             "detected_count": total_detected,
             "masked_image_base64": base64_image,
+            "ocr_debug": ocr_debug_text[:300],
             "message": f"문서 보정 및 주민등록번호 {total_detected}건 마스킹 완료"
         }
 
