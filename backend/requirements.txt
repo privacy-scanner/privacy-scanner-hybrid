@@ -1,7 +1,8 @@
-numpy<2
-fastapi==0.110.0
-uvicorn==0.28.0
-python-multipart==0.0.9
-opencv-python-headless==4.9.0.80
-Pillow==10.2.0
-pytesseract==0.3.10
+fastapi
+uvicorn
+opencv-python-headless
+pytesseract
+pdf2image
+numpy
+pillow
+python-multipart
