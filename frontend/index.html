@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔒 AI 서버사이드 프라이버시 문서 마스킹 스캐너</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
 
@@ -19,12 +22,6 @@
 
     <main class="w-full max-w-2xl bg-slate-800/95 backdrop-blur rounded-2xl shadow-2xl border border-slate-700 p-5 flex flex-col items-center space-y-4">
         
-        <!-- Backend API URL Setting -->
-        <div class="w-full bg-slate-900/80 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs">
-            <label class="text-slate-300 font-semibold">🔗 백엔드 API 서버 주소 (Render 등):</label>
-            <input type="text" id="backend-url" value="https://your-backend-service.onrender.com" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-        </div>
-
         <!-- Status Box -->
         <div id="status-box" class="w-full bg-slate-900 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-xs md:text-sm text-center font-medium">
             📂 문서를 업로드하고 서버 마스킹을 시작하세요.
@@ -79,70 +76,7 @@
         Hybrid Cloudflare Pages + Python FastAPI Backend
     </footer>
 
-    <script>
-        let selectedFile = null;
-        const fileInput = document.getElementById('file-input');
-        const statusBox = document.getElementById('status-box');
-        const btnProcess = document.getElementById('btn-process');
-        const previewImg = document.getElementById('preview-img');
-        const placeholderText = document.getElementById('placeholder-text');
-        const downloadBtn = document.getElementById('download-btn');
-
-        fileInput.addEventListener('change', (e) => {
-            fileInput.files[0];
-            if (e.target.files && e.target.files[0]) {
-                selectedFile = e.target.files[0];
-                statusBox.textContent = `✅ 파일 선택됨: ${selectedFile.name}`;
-                btnProcess.removeAttribute('disabled');
-                
-                // Show raw preview temporarily
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    previewImg.src = ev.target.result;
-                    previewImg.classList.remove('hidden');
-                    placeholderText.style.display = 'none';
-                };
-                reader.readAsDataURL(selectedFile);
-            }
-        });
-
-        btnProcess.addEventListener('click', async () => {
-            if (!selectedFile) return;
-
-            const backendUrl = document.getElementById('backend-url').value.trim();
-            const maskMode = document.querySelector('input[name="mask-mode"]:checked').value;
-
-            statusBox.textContent = "⏳ 서버에서 AI OCR 분석 및 마스킹 처리 중입니다... (약 5~10초 소요)";
-            btnProcess.setAttribute('disabled', 'true');
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('mask_mode', maskMode);
-
-            try {
-                const response = await fetch(`${backendUrl}/api/mask`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    statusBox.textContent = `✅ 마스킹 완료! (총 민감정보 ${data.detected_count}건 감지 및 처리)`;
-                    previewImg.src = data.masked_image_base64;
-                    downloadBtn.href = data.masked_image_base64;
-                    downloadBtn.download = `masked_${selectedFile.name}`;
-                    downloadBtn.classList.remove('hidden');
-                } else {
-                    statusBox.textContent = `⚠️ 오류 발생: ${data.message}`;
-                }
-            } catch (err) {
-                console.error(err);
-                statusBox.textContent = "⚠️ 서버 통신 실패. 백엔드 주소나 서버 상태를 확인하세요.";
-            } finally {
-                btnProcess.removeAttribute('disabled');
-            }
-        });
-    </script>
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
 </body>
 </html>
